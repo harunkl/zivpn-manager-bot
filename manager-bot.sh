@@ -417,11 +417,11 @@ cat <<EOF > "$BOT_SCRIPT"
 BOT_TOKEN="$BOT_TOKEN"
 ADMIN_ID="$ADMIN_ID"
 
-CONFIG="/etc/zivpn/config.json"
-META="/etc/zivpn/accounts_meta.json"
-SERVICE="zivpn.service"
-OFFSET_FILE="/tmp/zivpn_offset"
-BACKUP_DIR="/etc/zivpn"
+CONFIG="$CONFIG"
+META="$META"
+SERVICE="$SERVICE"
+OFFSET_FILE="$OFFSET_FILE"
+BACKUP_DIR="$BACKUP_DIR"
 
 # Helper: urlencode untuk pesan Telegram
 urlencode() { echo -n "$1" | jq -s -R -r @uri; }
