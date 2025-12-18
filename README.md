@@ -1,6 +1,6 @@
-ZIVPN Manager VPS & Telegram Bot
+# ***ZIVPN Manager VPS & Telegram Bot***
 
-Prasyarat
+## **Prasyarat**
 
 ⚠️ WAJIB memastikan UDP ZIVPN sudah terinstal dan berjalan di VPS.
 
@@ -11,9 +11,9 @@ Jika UDP ZIVPN belum terinstal, silakan instal terlebih dahulu.
 > Manager VPS dan Bot Telegram tidak akan berfungsi dengan benar tanpa UDP ZIVPN.
 
 
-Alur Instalasi
+## **Alur Instalasi**
 
-1. Instal UDP ZIVPN (wajib)
+## ***Instal UDP ZIVPN (wajib)***
 
   UDP server installation for ZIVPN Tunnel (SSH/DNS/UDP) VPN app.
 <br>
@@ -30,23 +30,23 @@ wget -O zi.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/zi.sh; s
 bash <(curl -fsSL https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/zi2.sh)
 ```
 
-### Uninstall Zizi
+#### Uninstall Zizi
 
 ```
 sudo wget -O ziun.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/uninstall.sh; sudo chmod +x ziun.sh; sudo ./ziun.sh
 ```
 
 
-2. Instal Manager VPS + Bot Telegram
+## ***Instal Manager VPS + Bot Telegram***
 
-### Instalasi
+#### Instalasi
 
 Jalankan perintah berikut sebagai root di VPS:
 ```
 curl -fsSL https://raw.githubusercontent.com/harunkl/zivpn-manager-bot/main/manager-bot.sh | bash
 ```
 
-Catatan
+***Catatan***
 
 Pastikan VPS memiliki akses internet normal
 
