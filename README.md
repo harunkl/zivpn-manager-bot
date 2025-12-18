@@ -6,14 +6,15 @@
 
 ⚠️ WAJIB siapkan Admin Id dan Token Bot telegram
 
-Jika UDP ZIVPN belum terinstal, silakan instal terlebih dahulu.
+⚠️ Ganti Admin id, Token bot, dan Api key di zivpn-manager
 
-> Manager VPS dan Bot Telegram tidak akan berfungsi dengan benar tanpa UDP ZIVPN.
+⚠️ Jika UDP ZIVPN belum terinstal, silakan instal terlebih dahulu.
+
+⚠️ Manager VPS dan Bot Telegram tidak akan berfungsi dengan benar tanpa UDP ZIVPN.
 
 
-## **Alur Instalasi**
 
-### ***Instal UDP ZIVPN (wajib)***
+## ***Instal UDP ZIVPN (wajib)***
 
   UDP server installation for ZIVPN Tunnel (SSH/DNS/UDP) VPN app.
 <br>
@@ -35,6 +36,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/zi2.
 ```
 sudo wget -O ziun.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/uninstall.sh; sudo chmod +x ziun.sh; sudo ./ziun.sh
 ```
+
+
 
 
 ### ***Instal Manager VPS + Bot Telegram***
