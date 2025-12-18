@@ -27,6 +27,14 @@ if [[ -z "$API_KEY" ]]; then
   exit 1
 fi
 
+# ===== KONFIGURASI ZIVPN =====
+CONFIG="/etc/zivpn/config.json"
+META="/etc/zivpn/accounts_meta.json"
+SERVICE="zivpn.service"
+OFFSET_FILE="/tmp/zivpn_offset"
+BACKUP_DIR="/etc/zivpn"
+
+
 # ============================
 # 1️⃣ Pastikan dependency
 # ============================
@@ -400,7 +408,7 @@ systemctl restart zivpn-api.service
 # ============================
 BOT_SCRIPT="/usr/local/bin/zivpn-bot.sh"
 if [[ "$ENABLE_TG" == "y" ]]; then
-cat <<'EOF' > "$BOT_SCRIPT"
+cat <<EOF > "$BOT_SCRIPT"
 #!/bin/bash
 # ZIVPN BOT - PREMIUM++ ULTRA ELEGANT
 # Pastikan file ini executable: chmod +x zivpn-bot.sh
@@ -657,27 +665,6 @@ send_msg "╔══════════════════╗
   done
 done
 EOF
-
-# ============================
-# 🔧 GANTI PLACEHOLDER (WAJIB)
-# ============================
-sed -i \
-  -e "s|__BOT_TOKEN__|$BOT_TOKEN|g" \
-  -e "s|__ADMIN_ID__|$ADMIN_ID|g" \
-  "$BOT_SCRIPT"
-
-# ============================
-# 🛡 VALIDASI ANTI KOSONG
-# ============================
-grep -q "__BOT_TOKEN__" "$BOT_SCRIPT" && {
-  echo "❌ BOT_TOKEN gagal ditanam"
-  exit 1
-}
-
-grep -q "__ADMIN_ID__" "$BOT_SCRIPT" && {
-  echo "❌ ADMIN_ID gagal ditanam"
-  exit 1
-}
 
 chmod +x "$BOT_SCRIPT"
 fi
