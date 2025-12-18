@@ -5,35 +5,6 @@
 # Ready to run via SFTP
 # Author: Harun & GPT-5
 # ============================
-# ===== INPUT TELEGRAM =====
-read -rp "Masukkan TELEGRAM BOT TOKEN : " BOT_TOKEN
-read -rp "Masukkan TELEGRAM ADMIN ID  : " ADMIN_ID
-read -rp "Aktifkan Telegram Bot? (y/n): " ENABLE_TG
-
-ENABLE_TG=${ENABLE_TG,,}   # lowercase
-
-if [[ "$ENABLE_TG" == "y" ]]; then
-  if [[ -z "$BOT_TOKEN" || -z "$ADMIN_ID" ]]; then
-    echo "❌ Bot token / Admin ID wajib diisi"
-    exit 1
-  fi
-fi
-
-# ===== AUTO GENERATE API KEY =====
-API_KEY=$(openssl rand -hex 16)
-
-if [[ -z "$API_KEY" ]]; then
-  echo "❌ Gagal generate API KEY"
-  exit 1
-fi
-
-# ===== KONFIGURASI ZIVPN =====
-CONFIG="/etc/zivpn/config.json"
-META="/etc/zivpn/accounts_meta.json"
-SERVICE="zivpn.service"
-OFFSET_FILE="/tmp/zivpn_offset"
-BACKUP_DIR="/etc/zivpn"
-
 
 # ============================
 # 1️⃣ Pastikan dependency
@@ -95,6 +66,48 @@ auto_remove_expired() {
         fi
     done
 }
+
+set_bot_env() {
+    ENV_FILE="/etc/zivpn/bot.env"
+
+    echo "===================================="
+    echo " SET TELEGRAM BOT CONFIG"
+    echo "===================================="
+
+    read -rp "Bot Token : " BOT_TOKEN
+    read -rp "Admin ID  : " ADMIN_ID
+
+    if [ -z "$BOT_TOKEN" ] || [ -z "$ADMIN_ID" ]; then
+        echo "❌ Bot Token & Admin ID tidak boleh kosong"
+        read -rp "Enter..." enter
+        menu
+    fi
+
+    # Generate API KEY jika belum ada
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+    fi
+
+    [ -z "$API_KEY" ] && API_KEY=$(openssl rand -hex 16)
+
+    cat <<EOF > "$ENV_FILE"
+BOT_TOKEN=$BOT_TOKEN
+ADMIN_ID=$ADMIN_ID
+API_KEY=$API_KEY
+EOF
+
+    chmod 600 "$ENV_FILE"
+
+    systemctl restart zivpn-bot.service >/dev/null 2>&1
+    systemctl restart zivpn-api.service >/dev/null 2>&1
+
+    echo "✅ Bot config berhasil disimpan"
+    echo "🔐 API KEY : $API_KEY"
+    echo "🤖 Bot & API direstart"
+    read -rp "Enter..." enter
+    menu
+}
+
 
 backup_accounts() {
     BACKUP_DIR="/etc/zivpn"
@@ -160,6 +173,7 @@ menu() {
     echo "5) Status VPS"
     echo "6) Backup"
     echo "7) Restore akun"
+    echo "8) Set Telegram Bot Config"
     echo "0) Keluar"
     echo "===================================="
     read -rp "Pilih: " choice
@@ -172,6 +186,7 @@ menu() {
         5) vps_status ;;
         6) backup_accounts ;;
         7) restore_accounts ;;
+        8) set_bot_env ;;
         0) exit 0 ;;
         *) menu ;;
     esac
@@ -263,14 +278,24 @@ chmod +x "$SHORTCUT"
 # 4️⃣ API Script & Service
 # ============================
 API_SCRIPT="/usr/local/bin/zivpn-api.sh"
-cat <<EOF > "$API_SCRIPT"
+cat <<'EOF' > "$API_SCRIPT"
 #!/bin/bash
 
 CONFIG="/etc/zivpn/config.json"
 META="/etc/zivpn/accounts_meta.json"
 SERVICE="zivpn.service"
 IFACE=$(ip route | awk '/default/ {print $5}' | head -n1)
-API_KEY="$API_KEY"
+
+ENV_FILE="/etc/zivpn/bot.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo -e "HTTP/1.1 500 Internal Server Error\n\nENV not found"
+  exit 0
+fi
+
+source "$ENV_FILE"
+
+
 
 read request
 
@@ -407,21 +432,26 @@ systemctl restart zivpn-api.service
 # 5️⃣ Telegram Bot Script & Service
 # ============================
 BOT_SCRIPT="/usr/local/bin/zivpn-bot.sh"
-if [[ "$ENABLE_TG" == "y" ]]; then
-cat <<EOF > "$BOT_SCRIPT"
+cat <<'EOF' > "$BOT_SCRIPT"
 #!/bin/bash
 # ZIVPN BOT - PREMIUM++ ULTRA ELEGANT
 # Pastikan file ini executable: chmod +x zivpn-bot.sh
 # Jalankan di background: ./zivpn-bot.sh &
 
-BOT_TOKEN="$BOT_TOKEN"
-ADMIN_ID="$ADMIN_ID"
+ENV_FILE="/etc/zivpn/bot.env"
 
-CONFIG="$CONFIG"
-META="$META"
-SERVICE="$SERVICE"
-OFFSET_FILE="$OFFSET_FILE"
-BACKUP_DIR="$BACKUP_DIR"
+if [ ! -f "$ENV_FILE" ]; then
+  echo "bot.env tidak ditemukan"
+  exit 1
+fi
+
+source "$ENV_FILE"
+
+CONFIG="/etc/zivpn/config.json"
+META="/etc/zivpn/accounts_meta.json"
+SERVICE="zivpn.service"
+OFFSET_FILE="/tmp/zivpn_offset"
+BACKUP_DIR="/etc/zivpn"
 
 # Helper: urlencode untuk pesan Telegram
 urlencode() { echo -n "$1" | jq -s -R -r @uri; }
@@ -667,7 +697,6 @@ done
 EOF
 
 chmod +x "$BOT_SCRIPT"
-fi
 
 cat <<EOF > /etc/systemd/system/zivpn-bot.service
 [Unit]
@@ -686,10 +715,8 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-if [[ "$ENABLE_TG" == "y" ]]; then
-  systemctl enable zivpn-bot.service
-  systemctl start zivpn-bot.service
-fi
+systemctl enable zivpn-bot.service
+systemctl start zivpn-bot.service
 
 # ============================
 # 6️⃣ Auto-remove expired 24 jam nonstop
@@ -734,8 +761,6 @@ chmod +x /usr/local/bin/zivpn-autoremove.sh
 echo "===================================="
 echo "✅ ZIVPN Manager + API + Bot Installed!"
 echo "Manager: zivpn-manager"
-echo "API KEY : $API_KEY"
-echo "API URL: http://IP_VPS:7001/?cmd=list&key=$API_KEY"
+echo "Seting Bot token dan Admin di Manager"
 echo "Auto-remove expired: ACTIVE"
-echo "Log: /var/log/zivpn-autoremove.log"
 echo "===================================="
