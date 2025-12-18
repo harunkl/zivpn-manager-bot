@@ -13,7 +13,7 @@ Jika UDP ZIVPN belum terinstal, silakan instal terlebih dahulu.
 
 ## **Alur Instalasi**
 
-## ***Instal UDP ZIVPN (wajib)***
+### ***Instal UDP ZIVPN (wajib)***
 
   UDP server installation for ZIVPN Tunnel (SSH/DNS/UDP) VPN app.
 <br>
@@ -37,13 +37,15 @@ sudo wget -O ziun.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/u
 ```
 
 
-## ***Instal Manager VPS + Bot Telegram***
+### ***Instal Manager VPS + Bot Telegram***
 
 #### Instalasi
 
 Jalankan perintah berikut sebagai root di VPS:
 ```
-curl -fsSL https://raw.githubusercontent.com/harunkl/zivpn-manager-bot/main/manager-bot.sh | bash
+curl -fsSL https://raw.githubusercontent.com/harunkl/zivpn-manager-bot/main/manager-bot.sh -o manager-bot.sh
+chmod +x manager-bot.sh
+./manager-bot.sh
 ```
 
 ***Catatan***
