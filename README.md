@@ -47,7 +47,7 @@ sudo wget -O ziun.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/u
 Jalankan perintah berikut sebagai root di VPS:
 ```
 curl -fsSL https://raw.githubusercontent.com/harunkl/zivpn-manager-bot/main/ziziv-manager-bot.sh -o ziziv-manager-bot.sh
-chmod +x ziziv-manager-bot
+chmod +x ziziv-manager-bot.sh
 ./ziziv-manager-bot.sh
 ```
 
