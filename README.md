@@ -51,6 +51,16 @@ chmod +x ziziv-manager-bot.sh
 ./ziziv-manager-bot.sh
 ```
 
+### ***Instal UDPGW***
+
+#### Instalasi
+
+Jalankan perintah berikut sebagai root di VPS:
+
+```
+curl -fsSL https://raw.githubusercontent.com/harunkl/zivpn-manager-bot/main/install-udpgw.sh | sudo bash
+```
+
 ***Catatan***
 
 Pastikan VPS memiliki akses internet normal
